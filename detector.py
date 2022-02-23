@@ -1,16 +1,11 @@
 """Baseline detector model.
-
 Inspired by
 You only look once: Unified, real-time object detection, Redmon, 2016.
 """
 import torch
 import torch.nn as nn
-import matplotlib.pyplot as plt
-import torchvision.transforms.functional as TF
-import utils
 from torchvision import models
 from torchvision import transforms
-
 
 
 class Detector(nn.Module):
@@ -18,7 +13,6 @@ class Detector(nn.Module):
 
     def __init__(self):
         """Create the module.
-
         Define all trainable layers.
         """
         super(Detector, self).__init__()
@@ -41,7 +35,6 @@ class Detector(nn.Module):
 
     def forward(self, inp):
         """Forward pass.
-
         Compute output of neural network from input.
         """
         features = self.features(inp)
@@ -51,7 +44,6 @@ class Detector(nn.Module):
 
     def decode_output(self, out, threshold):
         """Convert output to list of bounding boxes.
-
         Args:
             out (torch.tensor):
                 The output of the network.
@@ -110,10 +102,8 @@ class Detector(nn.Module):
 
     def input_transform(self, image, anns):
         """Prepare image and targets on loading.
-
         This function is called before an image is added to a batch.
         Must be passed as transforms function to dataset.
-
         Args:
             image (PIL.Image):
                 The image loaded from the dataset.
@@ -124,53 +114,6 @@ class Detector(nn.Module):
                 - (torch.Tensor) The image.
                 - (torch.Tensor) The network target containing the bounding box.
         """
-	#Do augmentations on PIL Image
-	figs, axs = plt.subplots(1,2)
-	axs[0].imshow(image)
-
-
-	
-	#BBS changes
-	bbs = []
-	for ann in anns:
-	    bbs.append({
-		"x": ann["bbox"][0],
-		"y": ann["bbox"][1],
-		"width": ann["bbox"][2],
-		"height": ann["bbox"][3],
-	    })
-	utils.add_bounding_boxes(axs[0], bbs)
-
-
-
-	cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
-	image = cj(image)
-	
-	ra = transforms.RandomAffine(0, [0.1, 0.1])
-	angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
-	TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
-	print(translations)
-
-	for ann in anns:
-            ann["bbox"][0] += translations[0]
-	    ann["bbox"][1] += translations[1]
-
-	
-
-	axs[1].imshow(image)
-	#BBS changes
-	bbs = []
-	for ann in anns:
-	    bbs.append({
-		"x": ann["bbox"][0],
-		"y": ann["bbox"][1],
-		"width": ann["bbox"][2],
-		"height": ann["bbox"][3],
-	    })
-	utils.add_bounding_boxes(axs[1], bbs)
-
-	plt.show()
-
         # Convert PIL.Image to torch.Tensor
         image = transforms.ToTensor()(image)
         image = transforms.Normalize(
