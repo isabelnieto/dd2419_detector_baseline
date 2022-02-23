@@ -139,7 +139,7 @@ class Detector(nn.Module):
 		"width": ann["bbox"][2],
 		"height": ann["bbox"][3],
 	    })
-	utils.add_bounding_boxes(asx[0], bbs)
+	utils.add_bounding_boxes(axs[0], bbs)
 
 
 
@@ -167,7 +167,7 @@ class Detector(nn.Module):
 		"width": ann["bbox"][2],
 		"height": ann["bbox"][3],
 	    })
-	utils.add_bunding_boxes(asx[1], bbs)
+	utils.add_bunding_boxes(axs[1], bbs)
 
 	plt.show()
 
