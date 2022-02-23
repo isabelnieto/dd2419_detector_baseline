@@ -146,7 +146,7 @@ class Detector(nn.Module):
 	cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
 	image = cj(image)
 	
-	ra = transform.RandomAffine(0, [0.1, 0,1])
+	ra = transforms.RandomAffine(0, [0.1, 0,1])
 	angle, translations, scale, shear = ra.get_params(self.degrees, self.translate, self.scale, self.shear, image.size)
 	TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
 	print(translations)
