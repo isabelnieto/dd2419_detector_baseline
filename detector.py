@@ -139,7 +139,7 @@ class Detector(nn.Module):
 		"width": ann["bbox"][2],
 		"height": ann["bbox"][3],
 	    })
-	utils.add_bunding_boxes(asx[0], bbs)
+	utils.add_bounding_boxes(asx[0], bbs)
 
 
 
