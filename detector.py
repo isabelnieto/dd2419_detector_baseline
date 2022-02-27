@@ -96,8 +96,6 @@ class Detector(nn.Module):
                 )
                 category = bb_coeffs[4]*15
                 category = math.floor(category +0.5)
-                if(category >14):
-                    category = 0
                 img_bbs.append(
                     {
                         "width": width,
