@@ -1,5 +1,6 @@
 """Utility functions to handle object detection."""
 import torch
+import math
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 
