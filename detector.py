@@ -88,7 +88,7 @@ class Detector(nn.Module):
                     self.img_width / self.out_cells_x * (bb_index[1] + bb_coeffs[0])
                     - width / 2.0
                 )
-                category = bb_coeffs[5]*15
+                category = bb_coeffs[4]*15
 
                 img_bbs.append(
                     {
