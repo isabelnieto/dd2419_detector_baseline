@@ -30,6 +30,7 @@ def add_bounding_boxes(ax, bbs, category_dict=None):
         ax.add_patch(rect)
         
         category = bb["category"]
+        category = math.floor(category +0.5)
         if(category >14):
             category = 0
         if category_dict is not None:
