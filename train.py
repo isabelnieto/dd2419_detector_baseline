@@ -21,7 +21,6 @@ NUM_CATEGORIES = 15
 
 def train(device="cpu"):
     """Train the network.
-
     Args:
         device: The device to train on."""
 
@@ -90,8 +89,8 @@ def train(device="cpu"):
 
             # compute loss
             reg_mse = nn.functional.mse_loss(
-                out[pos_indices[0], 0:4, pos_indices[1], pos_indices[2]],
-                target_batch[pos_indices[0], 0:4, pos_indices[1], pos_indices[2]],
+                out[pos_indices[0], 0:5, pos_indices[1], pos_indices[2]],
+                target_batch[pos_indices[0], 0:5, pos_indices[1], pos_indices[2]],
             )
             pos_mse = nn.functional.mse_loss(
                 out[pos_indices[0], 4, pos_indices[1], pos_indices[2]],
@@ -101,6 +100,7 @@ def train(device="cpu"):
                 out[neg_indices[0], 4, neg_indices[1], neg_indices[2]],
                 target_batch[neg_indices[0], 4, neg_indices[1], neg_indices[2]],
             )
+
             loss = pos_mse + weight_reg * reg_mse + weight_noobj * neg_mse
 
             # optimize
@@ -123,7 +123,7 @@ def train(device="cpu"):
             )
 
             # generate visualization every N iterations
-            if current_iteration % 500 == 0 and show_test_images:
+            if current_iteration % 2 == 0 and show_test_images:
                 detector.eval()
                 with torch.no_grad():
                     out = detector(test_images).cpu()
@@ -140,7 +140,7 @@ def train(device="cpu"):
                         )
 
                         # add bounding boxes
-                        utils.add_bounding_boxes(ax, bbs[i])
+                        utils.add_bounding_boxes(ax, bbs[i], dataset.coco.cats)
 
                         wandb.log(
                             {"test_img_{i}".format(i=i): figure}, step=current_iteration
