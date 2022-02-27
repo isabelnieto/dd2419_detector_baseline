@@ -38,7 +38,7 @@ def train(device="cpu"):
         transforms=detector.input_transform,
     )
 
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=9, shuffle=True)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=8, shuffle=True)
 
     # training params
     max_iterations = wandb.config.max_iterations = 10000
