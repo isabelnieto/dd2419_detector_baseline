@@ -32,7 +32,7 @@ def add_bounding_boxes(ax, bbs):
         plt.text(
             bb["x"],
             bb["y"],
-            category_dict[bb["category"]]["name"],
+            bb["category"],
         )
 
 
