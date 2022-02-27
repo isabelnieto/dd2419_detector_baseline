@@ -123,7 +123,7 @@ def train(device="cpu"):
             )
 
             # generate visualization every N iterations
-            if current_iteration % 50 == 0 and show_test_images:
+            if current_iteration % 5 == 0 and show_test_images:
                 detector.eval()
                 with torch.no_grad():
                     out = detector(test_images).cpu()
@@ -140,7 +140,7 @@ def train(device="cpu"):
                         )
 
                         # add bounding boxes
-                        utils.add_bounding_boxes(ax, bbs[i], 1)
+                        utils.add_bounding_boxes(ax, bbs[i])
 
                         wandb.log(
                             {"test_img_{i}".format(i=i): figure}, step=current_iteration
