@@ -2,10 +2,16 @@
 Inspired by
 You only look once: Unified, real-time object detection, Redmon, 2016.
 """
+import math
 import torch
 import torch.nn as nn
+import matplotlib.pyplot as plt
+import torchvision.transforms.functional as TF
+import utils
 from torchvision import models
 from torchvision import transforms
+
+
 
 
 class Detector(nn.Module):
@@ -23,12 +29,12 @@ class Detector(nn.Module):
         self.head = nn.Conv2d(in_channels=1280, out_channels=6, kernel_size=1)
         # 1x1 Convolution to reduce channels to out_channels without changing H and W
 
-        # 1280x15x20 -> 5x15x20, where each element 6 channel tuple corresponds to
+        # 1280x15x20 -> 5x15x20, where each element 5 channel tuple corresponds to
         #   (rel_x_offset, rel_y_offset, rel_x_width, rel_y_height, confidence, id)
         # Where rel_x_offset, rel_y_offset is relative offset from cell_center
         # Where rel_x_width, rel_y_width is relative to image size
         # Where confidence is predicted IOU * probability of object center in this cell
-        # Where id correspond to the id of the traffic sign
+        # Where id is the category of the traffic sign
         self.out_cells_x = 20.0
         self.out_cells_y = 15.0
         self.img_height = 480.0
@@ -89,14 +95,16 @@ class Detector(nn.Module):
                     - width / 2.0
                 )
                 category = bb_coeffs[4]*15
-
+                category = math.floor(category +0.5)
+                if(category >14):
+                    category = 0
                 img_bbs.append(
                     {
                         "width": width,
                         "height": height,
                         "x": x,
                         "y": y,
-                        "category": category
+                        "category": category,
                     }
                 )
             bbs.append(img_bbs)
@@ -117,6 +125,21 @@ class Detector(nn.Module):
                 - (torch.Tensor) The image.
                 - (torch.Tensor) The network target containing the bounding box.
         """
+        #Do augmentations on PIL Image
+      
+        cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
+        image = cj(image)
+        
+        ra = transforms.RandomAffine(0, [0.1, 0.1])
+        angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
+        image = TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
+
+        for ann in anns:
+            ann["bbox"][0] += translations[0]
+            ann["bbox"][1] += translations[1]
+
+        
+
         # Convert PIL.Image to torch.Tensor
         image = transforms.ToTensor()(image)
         image = transforms.Normalize(
