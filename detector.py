@@ -20,14 +20,15 @@ class Detector(nn.Module):
         self.features = models.mobilenet_v2(pretrained=True).features
         # output of mobilenet_v2 will be 1280x15x20 for 480x640 input images
 
-        self.head = nn.Conv2d(in_channels=1280, out_channels=5, kernel_size=1)
+        self.head = nn.Conv2d(in_channels=1280, out_channels=6, kernel_size=1)
         # 1x1 Convolution to reduce channels to out_channels without changing H and W
 
-        # 1280x15x20 -> 5x15x20, where each element 5 channel tuple corresponds to
-        #   (rel_x_offset, rel_y_offset, rel_x_width, rel_y_height, confidence
+        # 1280x15x20 -> 5x15x20, where each element 6 channel tuple corresponds to
+        #   (rel_x_offset, rel_y_offset, rel_x_width, rel_y_height, confidence, id)
         # Where rel_x_offset, rel_y_offset is relative offset from cell_center
         # Where rel_x_width, rel_y_width is relative to image size
         # Where confidence is predicted IOU * probability of object center in this cell
+        # Where id correspond to the id of the traffic sign
         self.out_cells_x = 20.0
         self.out_cells_y = 15.0
         self.img_height = 480.0
@@ -87,6 +88,7 @@ class Detector(nn.Module):
                     self.img_width / self.out_cells_x * (bb_index[1] + bb_coeffs[0])
                     - width / 2.0
                 )
+                category = bb_coeffs[5]*15
 
                 img_bbs.append(
                     {
@@ -94,6 +96,7 @@ class Detector(nn.Module):
                         "height": height,
                         "x": x,
                         "y": y,
+                        "category": category
                     }
                 )
             bbs.append(img_bbs)
@@ -134,6 +137,7 @@ class Detector(nn.Module):
             y = ann["bbox"][1]
             width = ann["bbox"][2]
             height = ann["bbox"][3]
+            category_id = ann["category_id"]
 
             x_center = x + width / 2.0
             y_center = y + height / 2.0
@@ -145,6 +149,7 @@ class Detector(nn.Module):
             y_cell_pos = y_center_rel - y_ind
             rel_width = width / self.img_width
             rel_height = height / self.img_height
+            rel_id = category_id/15
 
             # channels, rows (y cells), cols (x cells)
             target[4, y_ind, x_ind] = 1
@@ -154,5 +159,6 @@ class Detector(nn.Module):
             target[1, y_ind, x_ind] = y_cell_pos
             target[2, y_ind, x_ind] = rel_width
             target[3, y_ind, x_ind] = rel_height
+            target[5, y_ind, x_ind] = rel_id
 
         return image, target
