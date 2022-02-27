@@ -4,7 +4,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 
 
-def add_bounding_boxes(ax, bbs, category_dict=None):
+def add_bounding_boxes(ax, bbs):
     """Add bounding boxes to specified axes.
 
     Args:
@@ -29,12 +29,11 @@ def add_bounding_boxes(ax, bbs, category_dict=None):
         )
         ax.add_patch(rect)
 
-        if category_dict is not None:
-            plt.text(
-                bb["x"],
-                bb["y"],
-                category_dict[bb["category"]]["name"],
-            )
+        plt.text(
+            bb["x"],
+            bb["y"],
+            category_dict[bb["category"]]["name"],
+        )
 
 
 def save_model(model, path):
