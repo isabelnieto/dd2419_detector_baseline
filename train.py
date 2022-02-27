@@ -140,7 +140,7 @@ def train(device="cpu"):
                         )
 
                         # add bounding boxes
-                        utils.add_bounding_boxes(ax, bbs[i])
+                        utils.add_bounding_boxes(ax, bbs[i], 1)
 
                         wandb.log(
                             {"test_img_{i}".format(i=i): figure}, step=current_iteration
