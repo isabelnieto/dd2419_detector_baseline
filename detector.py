@@ -94,7 +94,8 @@ class Detector(nn.Module):
                     self.img_width / self.out_cells_x * (bb_index[1] + bb_coeffs[0])
                     - width / 2.0
                 )
-                category = bb_coeffs[4]*15
+                category = bb_coeffs[4]*16
+                
                 img_bbs.append(
                     {
                         "width": width,
@@ -156,7 +157,7 @@ class Detector(nn.Module):
             y_cell_pos = y_center_rel - y_ind
             rel_width = width / self.img_width
             rel_height = height / self.img_height
-            rel_id = category_id/15
+            rel_id = (category_id+1)/16
 
             # channels, rows (y cells), cols (x cells)
             target[4, y_ind, x_ind] = 1
