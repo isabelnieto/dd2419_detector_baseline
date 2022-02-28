@@ -100,8 +100,13 @@ def train(device="cpu"):
                 out[neg_indices[0], 4, neg_indices[1], neg_indices[2]],
                 target_batch[neg_indices[0], 4, neg_indices[1], neg_indices[2]],
             )
+            
+            class_mse = nn.functional.mse_loss(
+                out[pos_indices[0], 5, pos_indices[1], pos_indices[2]],
+                target_batch[pos_indices[0], 5, pos_indices[1], pos_indices[2]],
+            )
 
-            loss = pos_mse + weight_reg * reg_mse + weight_noobj * neg_mse
+            loss = pos_mse + weight_reg * reg_mse + weight_noobj * neg_mse + class_mse
 
             # optimize
             optimizer.zero_grad()
@@ -114,6 +119,7 @@ def train(device="cpu"):
                     "loss pos": pos_mse.item(),
                     "loss neg": neg_mse.item(),
                     "loss reg": reg_mse.item(),
+                    "loss class": class_mse.item(),
                 },
                 step=current_iteration,
             )
