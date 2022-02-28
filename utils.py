@@ -33,7 +33,7 @@ def add_bounding_boxes(ax, bbs, category_dict=None):
         category = bb["category"]
         if (category < 1.5):
             category = 0
-        if(categry > 15):
+        if(category > 15):
             category = 15
         category = math.floor(category +0.5) -1
           
