@@ -133,7 +133,7 @@ class Detector(nn.Module):
         )(image)
         
         cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
-	    image = cj(image)
+	image = cj(image)
         # Convert bounding boxes to target format
         
         # First two channels contain relativ x and y offset of bounding box center
