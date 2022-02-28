@@ -95,7 +95,7 @@ class Detector(nn.Module):
                     - width / 2.0
                 )
                 category = o[5, bb_index[0], bb_index[1]]
-                print(category)
+                
                 
                 img_bbs.append(
                     {
@@ -131,9 +131,11 @@ class Detector(nn.Module):
         image = transforms.Normalize(
             mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
         )(image)
-
+        
+        cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
+	    image = cj(image)
         # Convert bounding boxes to target format
-
+        
         # First two channels contain relativ x and y offset of bounding box center
         # Channel 3 & 4 contain relative width and height, respectively
         # Last channel is 1 for cell with bounding box center and 0 without
