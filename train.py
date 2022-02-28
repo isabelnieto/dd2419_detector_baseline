@@ -40,9 +40,9 @@ def train(device="cpu"):
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=8, shuffle=True)
 
     # training params
-    max_iterations = wandb.config.max_iterations = 50000
+    max_iterations = wandb.config.max_iterations = 15000
     learning_rate = wandb.config.learning_rate = 1e-4
-    weight_reg = wandb.config.weight_reg = 2
+    weight_reg = wandb.config.weight_reg = 3
     weight_noobj = wandb.config.weight_noobj = 4
 
     # run name (to easily identify model later)
