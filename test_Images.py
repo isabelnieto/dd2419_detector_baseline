@@ -87,7 +87,7 @@ def train(device="cpu"):
             # add bounding boxes
             utils.add_bounding_boxes(ax, bbs[i],dataset.coco.cats)
             wandb.log(
-             {"test_img_{i}".format(i=i): figure}, step=current_iteration
+             {"test_img_{i}".format(i=i): figure}, step=1000
             )
             plt.close()
     detector.train()
