@@ -31,9 +31,12 @@ def add_bounding_boxes(ax, bbs, category_dict=None):
         ax.add_patch(rect)
         
         category = bb["category"]
-        category = math.floor(category +0.5)
-        if(category >14):
+        if (category < 1.5)
             category = 0
+        if(categry > 15)
+            category = 15
+        category = math.floor(category +0.5) -1
+          
         if category_dict is not None:
             plt.text(
                 bb["x"],
