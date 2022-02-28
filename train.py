@@ -40,7 +40,7 @@ def train(device="cpu"):
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=8, shuffle=True)
 
     # training params
-    max_iterations = wandb.config.max_iterations = 10000
+    max_iterations = wandb.config.max_iterations = 50000
     learning_rate = wandb.config.learning_rate = 1e-4
     weight_reg = wandb.config.weight_reg = 1
     weight_noobj = wandb.config.weight_noobj = 1
@@ -123,7 +123,7 @@ def train(device="cpu"):
             )
 
             # generate visualization every N iterations
-            if current_iteration % 500 == 0 and show_test_images:
+            if current_iteration % 1000 == 0 and show_test_images:
                 detector.eval()
                 with torch.no_grad():
                     out = detector(test_images).cpu()
