@@ -124,7 +124,8 @@ class Detector(nn.Module):
                 - (torch.Tensor) The image.
                 - (torch.Tensor) The network target containing the bounding box.
         """
-       
+        cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
+	image = cj(image)
 
         # Convert PIL.Image to torch.Tensor
         image = transforms.ToTensor()(image)
@@ -132,8 +133,6 @@ class Detector(nn.Module):
             mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
         )(image)
         
-        cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
-	image = cj(image)
         # Convert bounding boxes to target format
         
         # First two channels contain relativ x and y offset of bounding box center
