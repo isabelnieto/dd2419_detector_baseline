@@ -26,6 +26,7 @@ def train(device="cpu"):
     Args:
         device: The device to train on."""
 
+    wandb.init(project="detector_baseline")
 
     # Init model
     detector = Detector().to(device)
@@ -76,7 +77,9 @@ def train(device="cpu"):
             ax.imshow(np.asarray(test_image))
             # add bounding boxes
             utils.add_bounding_boxes(ax, bbs[i],dataset.coco.cats)
-
+            wandb.log(
+             {"test_img_{i}".format(i=i): figure}, step=current_iteration
+            )
             plt.close()
     detector.train()
 
