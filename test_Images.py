@@ -30,12 +30,12 @@ def train(device="cpu"):
     # Init model
     detector = Detector().to(device)
 
-    model_path = "/home/isabeln/dd2419_ws/src/m2/scripts/det_2022-02-23_16-55-53-971780.pt"
+    model_path = "./model.pt"
     utils.load_model(detector,model_path,device)
 
     dataset = CocoDetection(
-        root="./training",
-        annFile="./annotations/training.json",
+        root="./dd2419_coco/training",
+        annFile="./dd2419_coco/annotations/training.json",
         transforms=detector.input_transform,
     )
 
