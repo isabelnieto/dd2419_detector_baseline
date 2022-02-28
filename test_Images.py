@@ -52,7 +52,7 @@ def train(device="cpu"):
     if not os.path.exists(directory):
         os.makedirs(directory)
     for file_name in sorted(os.listdir(directory)):
-        if file_name.endswith(".jpg"):
+        if file_name.endswith(".png"):
             file_path = os.path.join(directory, file_name)
             test_image = Image.open(file_path)
             torch_image, _ = detector.input_transform(test_image, [])
