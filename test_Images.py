@@ -74,7 +74,16 @@ def train(device="cpu"):
 
         for i, test_image in enumerate(test_images):
             figure, ax = plt.subplots(1)
-            ax.imshow(np.asarray(test_image))
+            plt.imshow(test_image.cpu().permute(1, 2, 0))
+            plt.imshow(
+            out[i, 4, :, :],
+            interpolation="nearest",
+            extent=(0, 640, 480, 0),
+            alpha=0.7,
+            )
+
+            # add bounding boxes
+            utils.add_bounding_boxes(ax, bbs[i], dataset.coco.cats)
             # add bounding boxes
             utils.add_bounding_boxes(ax, bbs[i],dataset.coco.cats)
             wandb.log(
