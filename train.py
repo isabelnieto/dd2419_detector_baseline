@@ -216,11 +216,11 @@ def validate(detector, val_dataloader, current_iteration, device):
             val_img_batch = val_img_batch.to(device)
             val_target_batch = val_target_batch.to(device)
             val_out = detector(val_img_batch)
-            reg_mse, pos_mse, neg_mse = compute_loss(val_out, val_target_batch)
+            reg_mse, pos_mse, neg_mse, class_mse = compute_loss(val_out, val_target_batch)
             total_reg_mse += reg_mse
             total_pos_mse += pos_mse
             total_neg_mse += neg_mse
-            loss += WEIGHT_POS * pos_mse + WEIGHT_REG * reg_mse + WEIGHT_NEG * neg_mse
+            loss += WEIGHT_POS * pos_mse + WEIGHT_REG * reg_mse + WEIGHT_NEG * neg_mse + class_mse
             imgs_bbs = detector.decode_output(val_out, topk=100)
             for img_bbs in imgs_bbs:
                 for img_bb in img_bbs:
@@ -234,7 +234,7 @@ def validate(detector, val_dataloader, current_iteration, device):
                                 img_bb["height"],
                             ],
                             "area": img_bb["width"] * img_bb["height"],
-                            "category_id": 1,  # TODO replace with predicted category id
+                            "category_id": img_bb["category"], 
                             "score": img_bb["score"],
                             "image_id": image_id,
                         }
@@ -244,7 +244,7 @@ def validate(detector, val_dataloader, current_iteration, device):
             count += len(val_img_batch) / BATCH_SIZE
         coco_pred.createIndex()
         coco_eval = COCOeval(val_dataloader.dataset.coco, coco_pred, iouType="bbox")
-        coco_eval.params.useCats = 0  # TODO replace with 1 when categories are added
+        coco_eval.params.useCats = 1 
         coco_eval.evaluate()
         coco_eval.accumulate()
         coco_eval.summarize()
@@ -267,7 +267,7 @@ def validate(detector, val_dataloader, current_iteration, device):
         )
     detector.train()
 
-    
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     device = parser.add_mutually_exclusive_group(required=True)
