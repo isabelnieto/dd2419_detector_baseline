@@ -143,16 +143,16 @@ class Detector(nn.Module):
             y_pos = ann["bbox"][1] + ann["bbox"][3]/2
             y_neg = ann["bbox"][1] - ann["bbox"][3]/2
             if x_pos > 640:
-                 ann["bbox"][0] = 640
+                 ann["bbox"][0] = 640 - ann["bbox"][2]/2
             
             if x_neg < 0:
-                 ann["bbox"][0] = 0
+                 ann["bbox"][0] = ann["bbox"][2]/2
             
             if y_pos > 480:
-                 ann["bbox"][1] = 480
+                 ann["bbox"][1] = 480 - ann["bbox"][3]/2
             
             if y_neg < 0:
-                 ann["bbox"][1] = 0
+                 ann["bbox"][1] = ann["bbox"][3]/2
 
         
 
