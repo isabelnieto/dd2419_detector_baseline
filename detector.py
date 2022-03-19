@@ -136,6 +136,7 @@ class Detector(nn.Module):
         for ann in anns:
             ann["bbox"][0] += translations[0]
             ann["bbox"][1] += translations[1]
+            print(translations)
             #check is inside the limits
             x_pos = ann["bbox"][0] + ann["bbox"][2]/2
             x_neg = ann["bbox"][0] - ann["bbox"][2]/2
