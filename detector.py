@@ -12,8 +12,6 @@ from torchvision import models
 from torchvision import transforms
 
 
-
-"""HOLA"""
 class Detector(nn.Module):
     """Baseline module for object detection."""
 
@@ -124,8 +122,39 @@ class Detector(nn.Module):
                 - (torch.Tensor) The image.
                 - (torch.Tensor) The network target containing the bounding box.
         """
+        #Transfor color
         cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
-	image = cj(image)
+        image = cj(image)
+
+        #Transform position
+        
+        ra = transforms.RandomAffine(0, [0.1, 0.1])
+        angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
+        TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
+        
+
+        for ann in anns:
+            ann["bbox"][0] += translations[0]
+            ann["bbox"][1] += translations[1]
+            #check is inside the limits
+            x_pos = ann["bbox"][0] + ann["bbox"][2]/2
+            x_neg = ann["bbox"][0] - ann["bbox"][2]/2
+            y_pos = ann["bbox"][1] + ann["bbox"][3]/2
+            y_neg = ann["bbox"][1] - ann["bbox"][3]/2
+
+            if x_pos > 640:
+                 ann["bbox"][0] = 640
+            
+            if x_neg < 0:
+                 ann["bbox"][0] = 0
+            
+            if x_pos > 480:
+                 ann["bbox"][1] = 480
+            
+            if x_neg < 0:
+                 ann["bbox"][1] = 0
+
+        
 
         # Convert PIL.Image to torch.Tensor
         image = transforms.ToTensor()(image)
