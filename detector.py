@@ -10,8 +10,7 @@ import torchvision.transforms.functional as TF
 import utils
 from torchvision import models
 from torchvision import transforms
-from torchvision.datasets import CocoDetection
-
+import numpy as np
 
 
 class Detector(nn.Module):
@@ -49,7 +48,7 @@ class Detector(nn.Module):
 
         return out
 
-    def decode_output(self, out, threshold):
+    def decode_output(self, out, threshold=None, topk=100):
         """Convert output to list of bounding boxes.
         Args:
             out (torch.tensor):
@@ -59,8 +58,11 @@ class Detector(nn.Module):
                     C = channel size
                     H = image height
                     W = image width
-            threshold (float):
+            threshold (optional[float]):
                 The threshold above which a bounding box will be accepted.
+                If None, the topk bounding boxes will be returned.
+            topk (int):
+                Number of returned bounding boxes if threshold is None.
         Returns:
             List[List[Dict]]
             List containing a list of detected bounding boxes in each image.
@@ -69,31 +71,39 @@ class Detector(nn.Module):
                 - "y": Top-left corner row
                 - "width": Width of bounding box in pixel
                 - "height": Height of bounding box in pixel
+                - "score": Confidence score of bounding box
                 - "category": Category (not implemented yet!)
         """
         bbs = []
+        out = out.cpu()
         # decode bounding boxes for each image
         for o in out:
             img_bbs = []
 
             # find cells with bounding box center
-            bb_indices = torch.nonzero(o[4, :, :] >= threshold)
+            if threshold is not None:
+                bb_indices = torch.nonzero(o[4, :, :] >= threshold)
+            else:
+                _, flattened_indices = torch.topk(o[4, :, :].flatten(), topk)
+                bb_indices = np.array(
+                    np.unravel_index(flattened_indices.numpy(), o[4, :, :].shape)
+                ).T
 
             # loop over all cells with bounding box center
             for bb_index in bb_indices:
                 bb_coeffs = o[0:5, bb_index[0], bb_index[1]]
 
                 # decode bounding box size and position
-                width = self.img_width * bb_coeffs[2]
-                height = self.img_height * bb_coeffs[3]
+                width = self.img_width * abs(bb_coeffs[2].item())
+                height = self.img_height * abs(bb_coeffs[3].item())
                 y = (
                     self.img_height / self.out_cells_y * (bb_index[0] + bb_coeffs[1])
                     - height / 2.0
-                )
+                ).item()
                 x = (
                     self.img_width / self.out_cells_x * (bb_index[1] + bb_coeffs[0])
                     - width / 2.0
-                )
+                ).item()
                 category = o[5, bb_index[0], bb_index[1]]
                 
                 
@@ -103,6 +113,7 @@ class Detector(nn.Module):
                         "height": height,
                         "x": x,
                         "y": y,
+                        "score": o[4, bb_index[0], bb_index[1]].item(),
                         "category": category,
                     }
                 )
@@ -125,9 +136,6 @@ class Detector(nn.Module):
                 - (torch.Tensor) The network target containing the bounding box.
         """
         print(anns)
-        figs,axs = plt.subplots(1,2)
-        axs[0].imshow(image)
-
         #Transfor color
         cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
         image = cj(image)
@@ -137,39 +145,28 @@ class Detector(nn.Module):
         ra = transforms.RandomAffine(0, [0.1, 0.1])
         angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
         image = TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
-        axs[1].imshow(image)
+        
 
         for ann in anns:
             ann["bbox"][0] += translations[0]
             ann["bbox"][1] += translations[1]
 
-            # #check is inside the limits
-            # x_pos = ann["bbox"][0] + ann["bbox"][2]/2
-            # x_neg = ann["bbox"][0] - ann["bbox"][2]/2
-            # y_pos = ann["bbox"][1] + ann["bbox"][3]/2
-            # y_neg = ann["bbox"][1] - ann["bbox"][3]/2
-            # if x_pos >= 640:
-            #      ann["bbox"][0] = 640 - ann["bbox"][2]/2 -1
+            #check is inside the limits
+            x_pos = ann["bbox"][0] + ann["bbox"][2]/2
+            x_neg = ann["bbox"][0] - ann["bbox"][2]/2
+            y_pos = ann["bbox"][1] + ann["bbox"][3]/2
+            y_neg = ann["bbox"][1] - ann["bbox"][3]/2
+            if x_pos >= 640:
+                 ann["bbox"][0] = 640 - ann["bbox"][2]/2 -1
             
-            # if x_neg <= 0:
-            #      ann["bbox"][0] = ann["bbox"][2]/2 +1
+            if x_neg <= 0:
+                 ann["bbox"][0] = ann["bbox"][2]/2 +1
             
-            # if y_pos >= 480:
-            #      ann["bbox"][1] = 480 - ann["bbox"][3]/2 -1
+            if y_pos >= 480:
+                 ann["bbox"][1] = 480 - ann["bbox"][3]/2 -1
             
-            # if y_neg <= 0:
-            #      ann["bbox"][1] = ann["bbox"][3]/2 +1
-        bbs = []
-        for ann in anns:
-            bbs.append({
-                "x": ann["bbox"][0],
-                "y": ann["bbox"][1],
-                "width": ann["bbox"][2],
-                "height": ann["bbox"][3],
-            })
-
-        utils.add_bounding_boxes(axs[1], bbs)
-        plt.show()
+            if y_neg <= 0:
+                 ann["bbox"][1] = ann["bbox"][3]/2 +1
 
         
 
@@ -217,4 +214,4 @@ class Detector(nn.Module):
             target[3, y_ind, x_ind] = rel_height
             target[5, y_ind, x_ind] = rel_id
 
-        return image, target
+        return image, 

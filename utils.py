@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 
 def add_bounding_boxes(ax, bbs, category_dict=None):
     """Add bounding boxes to specified axes.
-
     Args:
         ax (plt.axis):
             The axis to add the bounding boxes to.
@@ -48,7 +47,6 @@ def add_bounding_boxes(ax, bbs, category_dict=None):
 
 def save_model(model, path):
     """Save model to disk.
-
     Args:
         model (torch.module): The model to save.
         path (str): The path to save the model to.
@@ -58,7 +56,6 @@ def save_model(model, path):
 
 def load_model(model, path, device):
     """Load model weights from disk.
-
     Args:
         model (torch.module): The model to load the weights into.
         path (str): The path from which to load the model weights.
