@@ -135,7 +135,9 @@ class Detector(nn.Module):
                 - (torch.Tensor) The image.
                 - (torch.Tensor) The network target containing the bounding box.
         """
-        print(anns)
+        figs,axs = plt.subplots(1,2)
+        axs[0].imshow(image)
+
         #Transfor color
         cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
         image = cj(image)
@@ -145,7 +147,7 @@ class Detector(nn.Module):
         ra = transforms.RandomAffine(0, [0.1, 0.1])
         angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
         image = TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
-        
+        axs[1].imshow(image)
 
         for ann in anns:
             ann["bbox"][0] += translations[0]
@@ -157,16 +159,27 @@ class Detector(nn.Module):
             y_pos = ann["bbox"][1] + ann["bbox"][3]/2
             y_neg = ann["bbox"][1] - ann["bbox"][3]/2
             if x_pos >= 640:
-                 ann["bbox"][0] = 640 - ann["bbox"][2]/2 -1
+                    ann["bbox"][0] = 640 - ann["bbox"][2]/2 -1
             
             if x_neg <= 0:
-                 ann["bbox"][0] = ann["bbox"][2]/2 +1
+                    ann["bbox"][0] = ann["bbox"][2]/2 +1
             
             if y_pos >= 480:
-                 ann["bbox"][1] = 480 - ann["bbox"][3]/2 -1
+                    ann["bbox"][1] = 480 - ann["bbox"][3]/2 -1
             
             if y_neg <= 0:
-                 ann["bbox"][1] = ann["bbox"][3]/2 +1
+                    ann["bbox"][1] = ann["bbox"][3]/2 +1
+        bbs = []
+        for ann in anns:
+            bbs.append({
+                "x": ann["bbox"][0],
+                "y": ann["bbox"][1],
+                "width": ann["bbox"][2],
+                "height": ann["bbox"][3],
+            })
+
+        utils.add_bounding_boxes(axs[1], bbs)
+        plt.show()
 
         
 
@@ -214,4 +227,4 @@ class Detector(nn.Module):
             target[3, y_ind, x_ind] = rel_height
             target[5, y_ind, x_ind] = rel_id
 
-        return image, 
+        return image, target
