@@ -143,7 +143,7 @@ class Detector(nn.Module):
         
         ra = transforms.RandomAffine(0, [0.1, 0.1])
         angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
-        TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
+        image = TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
         
 
         for ann in anns:
