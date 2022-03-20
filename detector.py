@@ -135,6 +135,7 @@ class Detector(nn.Module):
                 - (torch.Tensor) The image.
                 - (torch.Tensor) The network target containing the bounding box.
         """
+        print(anns)
         #Transfor color
         cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
         image = cj(image)
