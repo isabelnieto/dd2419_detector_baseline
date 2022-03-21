@@ -113,7 +113,7 @@ class Detector(nn.Module):
                         "height": height,
                         "x": x,
                         "y": y,
-                        "score": o[4, bb_index[0], bb_index[1]].item(),
+                        "score": o[4, bb_index[0], bb_index[1]],
                         "category": category,
                     }
                 )
@@ -211,9 +211,9 @@ class Detector(nn.Module):
             y_ind = int(y_center_rel)
             x_cell_pos = x_center_rel - x_ind
             y_cell_pos = y_center_rel - y_ind
-            rel_width = width / self.img_width
+            rel_width  = width / self.img_width
             rel_height = height / self.img_height
-            rel_id = (category_id+1)
+            rel_id     = (category_id+1)
 
             # channels, rows (y cells), cols (x cells)
             target[4, y_ind, x_ind] = 1

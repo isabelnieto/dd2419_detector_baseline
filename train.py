@@ -19,12 +19,12 @@ import utils
 from detector import Detector
 
 NUM_CATEGORIES = 15
-VALIDATION_ITERATION = 100
+VALIDATION_ITERATION = 10000
 MAX_ITERATIONS = 15000
 LEARNING_RATE = 1e-4
 WEIGHT_POS = 1
 WEIGHT_NEG = 1
-WEIGHT_REG = 1
+WEIGHT_REG = 10
 BATCH_SIZE = 8
 
 
@@ -144,7 +144,7 @@ def train(device="cpu"):
             loss= WEIGHT_POS * pos_mse + WEIGHT_REG * reg_mse + WEIGHT_NEG * neg_mse 
             #+ class_mse
 
-            # optimize
+            # optimizeion to dataset.
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
