@@ -30,7 +30,7 @@ class Detector(nn.Module):
 
         # 1280x15x20 -> 5x15x20, where each element 5 channel tuple corresponds to
         #   (rel_x_offset, rel_y_offset, rel_x_width, rel_y_height, confidence, id)
-        # Where rel_x_offset, rel_y_offset is relative offset from cell_center
+        # WhereBATCH_SIZE rel_x_offset, rel_y_offset is relative offset from cell_center
         # Where rel_x_width, rel_y_width is relative to image size
         # Where confidence is predicted IOU * probability of object center in this cell
         # Where id is the category of the traffic sign
@@ -144,29 +144,29 @@ class Detector(nn.Module):
 
         #Transform position
         
-        ra = transforms.RandomAffine(0, [0.15, 0.15])
-        angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
-        image = TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
-        # axs[1].imshow(image)
+        # ra = transforms.RandomAffine(0, [0.15, 0.15])
+        # angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
+        # image = TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
+        # # axs[1].imshow(image)
 
-        for ann in anns:
-            ann["bbox"][0] += translations[0]
-            ann["bbox"][1] += translations[1]
+        # for ann in anns:
+        #     ann["bbox"][0] += translations[0]
+        #     ann["bbox"][1] += translations[1]
 
-            if ann["bbox"][0] + ann["bbox"][2] >= 640:
-                ann["bbox"][0] = 640 - ann["bbox"][2]
+        #     if ann["bbox"][0] + ann["bbox"][2] >= 640:
+        #         ann["bbox"][0] = 640 - ann["bbox"][2]
             
 
-            if ann["bbox"][0] <= 0:
-                ann["bbox"][0] = 0
+        #     if ann["bbox"][0] <= 0:
+        #         ann["bbox"][0] = 0
             
 
-            if ann["bbox"][1] + ann["bbox"][3] >= 480:
-                ann["bbox"][1] = 480 - ann["bbox"][3] 
+        #     if ann["bbox"][1] + ann["bbox"][3] >= 480:
+        #         ann["bbox"][1] = 480 - ann["bbox"][3] 
             
 
-            if ann["bbox"][1] <= 0:
-                ann["bbox"][1] =  0
+        #     if ann["bbox"][1] <= 0:
+        #         ann["bbox"][1] =  0
             
             
         # bbs = []
