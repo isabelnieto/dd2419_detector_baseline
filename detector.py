@@ -150,7 +150,7 @@ class Detector(nn.Module):
             translation_out = False
             iterator +=1
             
-            ra = transforms.RandomAffine(0, [0.15, 0.15])
+            ra = transforms.RandomAffine(0, [0.05, 0.05])
             angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
             ima = TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
 
