@@ -19,8 +19,8 @@ import utils
 from detector import Detector
 
 NUM_CATEGORIES = 15
-VALIDATION_ITERATION = 1000
-MAX_ITERATIONS = 10000
+VALIDATION_ITERATION = 100
+MAX_ITERATIONS = 15000
 LEARNING_RATE = 1e-4
 WEIGHT_POS = 1
 WEIGHT_NEG = 1
@@ -44,7 +44,7 @@ def compute_loss(prediction_batch, target_batch):
     # (this could be passed from input_transform to avoid recomputation)
     pos_indices = torch.nonzero(target_batch[:, 4, :, :] == 1, as_tuple=True)
     neg_indices = torch.nonzero(target_batch[:, 4, :, :] == 0, as_tuple=True)
-
+    
     # compute loss
     reg_mse = nn.functional.mse_loss(
         prediction_batch[pos_indices[0], 0:4, pos_indices[1], pos_indices[2]],
@@ -133,14 +133,16 @@ def train(device="cpu"):
     current_iteration = 1
     while current_iteration <= MAX_ITERATIONS:
         for img_batch, target_batch in dataloader:
+           
             img_batch = img_batch.to(device)
             target_batch = target_batch.to(device)
-
+            
             # run network
             out = detector(img_batch)
-
+            
             reg_mse, pos_mse, neg_mse, class_mse = compute_loss(out, target_batch)
-            loss= WEIGHT_POS * pos_mse + WEIGHT_REG * reg_mse + WEIGHT_NEG * neg_mse + class_mse
+            loss= WEIGHT_POS * pos_mse + WEIGHT_REG * reg_mse + WEIGHT_NEG * neg_mse 
+            #+ class_mse
 
             # optimize
             optimizer.zero_grad()
@@ -157,7 +159,7 @@ def train(device="cpu"):
                 },
                 step=current_iteration,
             )
-
+            
             print(
                 "Iteration: {}, loss: {}".format(current_iteration, loss.item()),
             )
