@@ -142,33 +142,31 @@ class Detector(nn.Module):
         cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
         image = cj(image)
 
+        translation_out = True
+        iterator = 0
+
         #Transform position
+        while translation_out == True and iterator <5:
+            translation_out = False
+            iterator +=1
+            
+            ra = transforms.RandomAffine(0, [0.15, 0.15])
+            angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
+            ima = TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
+
+            for ann in anns:
+                if ann["bbox"][0] + ann["bbox"][2] + translations[0] >= 640 or ann["bbox"][0] + translations[0] <= 0 or  ann["bbox"][1] + ann["bbox"][3] + translations[1] >= 480 or ann["bbox"][1] + translations[1] <= 0:
+                    translation_out = True
+
         
-        # ra = transforms.RandomAffine(0, [0.15, 0.15])
-        # angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
-        # image = TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
-        # # axs[1].imshow(image)
+        if iterator < 5:
+            image = ima
+            for ann in anns:
+                ann["bbox"][0] += translations[0]
+                ann["bbox"][1] += translations[1]
+        
 
-        # for ann in anns:
-        #     ann["bbox"][0] += translations[0]
-        #     ann["bbox"][1] += translations[1]
-
-        #     if ann["bbox"][0] + ann["bbox"][2] >= 640:
-        #         ann["bbox"][0] = 640 - ann["bbox"][2]
-            
-
-        #     if ann["bbox"][0] <= 0:
-        #         ann["bbox"][0] = 0
-            
-
-        #     if ann["bbox"][1] + ann["bbox"][3] >= 480:
-        #         ann["bbox"][1] = 480 - ann["bbox"][3] 
-            
-
-        #     if ann["bbox"][1] <= 0:
-        #         ann["bbox"][1] =  0
-            
-            
+        # axs[1].imshow(image)         
         # bbs = []
         # for ann in anns:
         #     bbs.append({
