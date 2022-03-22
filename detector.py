@@ -170,7 +170,6 @@ class Detector(nn.Module):
             for ann in anns:
                 if ann["bbox"][0] + ann["bbox"][2] + translations[0] >= 640 or ann["bbox"][0] + translations[0] <= 0 or  ann["bbox"][1] + ann["bbox"][3] + translations[1] >= 480 or ann["bbox"][1] + translations[1] <= 0:
                     translation_out = True
-                    print('out of range')
 
         
         if iterator < 5:
@@ -227,7 +226,7 @@ class Detector(nn.Module):
             y_cell_pos = y_center_rel - y_ind
             rel_width  = width / self.img_width
             rel_height = height / self.img_height
-            rel_id     = (category_id+1)
+            rel_id     = (category_id+1)/15
 
             # channels, rows (y cells), cols (x cells)
             target[4, y_ind, x_ind] = 1
