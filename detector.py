@@ -138,18 +138,18 @@ class Detector(nn.Module):
         """
         anns = copy.deepcopy(annotations)
 
-        figs,axs = plt.subplots(1,2)
-        bbs = []
-        for ann in anns:
-            bbs.append({
-                "x": ann["bbox"][0],
-                "y": ann["bbox"][1],
-                "width": ann["bbox"][2],
-                "height": ann["bbox"][3],
-            })
+        # figs,axs = plt.subplots(1,2)
+        # bbs = []
+        # for ann in anns:
+        #     bbs.append({
+        #         "x": ann["bbox"][0],
+        #         "y": ann["bbox"][1],
+        #         "width": ann["bbox"][2],
+        #         "height": ann["bbox"][3],
+        #     })
 
-        utils.add_bounding_boxes(axs[0], bbs)
-        axs[0].imshow(image)
+        # utils.add_bounding_boxes(axs[0], bbs)
+        # axs[0].imshow(image)
 
         #Transform color
         cj = transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
@@ -199,19 +199,19 @@ class Detector(nn.Module):
                 ann["bbox"][0] += translations[0]
                 ann["bbox"][1] += translations[1]
 
-        print(translations)
-        axs[1].imshow(image)         
-        bbs = []
-        for ann in anns:
-            bbs.append({
-                "x": ann["bbox"][0],
-                "y": ann["bbox"][1],
-                "width": ann["bbox"][2],
-                "height": ann["bbox"][3],
-            })
+        # print(translations)
+        # axs[1].imshow(image)         
+        # bbs = []
+        # for ann in anns:
+        #     bbs.append({
+        #         "x": ann["bbox"][0],
+        #         "y": ann["bbox"][1],
+        #         "width": ann["bbox"][2],
+        #         "height": ann["bbox"][3],
+        #     })
 
-        utils.add_bounding_boxes(axs[1], bbs)
-        plt.show()
+        # utils.add_bounding_boxes(axs[1], bbs)
+        # plt.show()
 
         
 
