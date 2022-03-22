@@ -20,7 +20,7 @@ from detector import Detector
 
 NUM_CATEGORIES = 15
 VALIDATION_ITERATION = 500
-MAX_ITERATIONS = 12000
+MAX_ITERATIONS = 15000
 LEARNING_RATE = 1e-4
 WEIGHT_POS = 1
 WEIGHT_NEG = 1
@@ -88,7 +88,7 @@ def train(device="cpu"):
     val_dataset = CocoDetection(
         root="./dd2419_coco/validation",
         annFile="./dd2419_coco/annotations/validation.json",
-        transforms=detector.input_transform,
+        transforms=detector.input_transform_validation,
     )
 
     dataloader = torch.utils.data.DataLoader(
@@ -222,7 +222,7 @@ def validate(detector, val_dataloader, current_iteration, device):
             total_reg_mse += reg_mse
             total_pos_mse += pos_mse
             total_neg_mse += neg_mse
-            loss += WEIGHT_POS * pos_mse + WEIGHT_REG * reg_mse + WEIGHT_NEG * neg_mse + class_mse
+            loss += WEIGHT_POS * pos_mse + WEIGHT_REG * reg_mse + WEIGHT_NEG * neg_mse
             imgs_bbs = detector.decode_output(val_out, topk=100)
             for img_bbs in imgs_bbs:
                 for img_bb in img_bbs:
