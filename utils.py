@@ -35,7 +35,7 @@ def add_bounding_boxes(ax, bbs, category_dict=None):
         if category_dict is not None:
             category = bb["category"]
 
-            category = math.floor(category +0.5) - 1
+            category = math.floor(category*15 +0.5) - 1
             if (category < 0.5):
                 category = 0
             if(category > 14):
