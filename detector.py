@@ -11,11 +11,12 @@ import utils
 from torchvision import models
 from torchvision import transforms
 import numpy as np
+import copy
 
 
 class Detector(nn.Module):
     """Baseline module for object detection."""
-
+    
     def __init__(self):
         """Create the module.
         Define all trainable layers.
@@ -121,7 +122,7 @@ class Detector(nn.Module):
 
         return bbs
 
-    def input_transform(self, image, anns):
+    def input_transform(self, image, annotations):
         """Prepare image and targets on loading.
         This function is called before an image is added to a batch.
         Must be passed as transforms function to dataset.
@@ -135,7 +136,19 @@ class Detector(nn.Module):
                 - (torch.Tensor) The image.
                 - (torch.Tensor) The network target containing the bounding box.
         """
+        anns = copy.deepcopy(annotations)
+
         # figs,axs = plt.subplots(1,2)
+        # bbs = []
+        # for ann in anns:
+        #     bbs.append({
+        #         "x": ann["bbox"][0],
+        #         "y": ann["bbox"][1],
+        #         "width": ann["bbox"][2],
+        #         "height": ann["bbox"][3],
+        #     })
+
+        # utils.add_bounding_boxes(axs[0], bbs)
         # axs[0].imshow(image)
 
         #Transfor color
@@ -150,13 +163,14 @@ class Detector(nn.Module):
             translation_out = False
             iterator +=1
             
-            ra = transforms.RandomAffine(0, [0.05, 0.05])
+            ra = transforms.RandomAffine(0, [0.15, 0.15])
             angle, translations, scale, shear = ra.get_params(ra.degrees, ra.translate, ra.scale, ra.shear, image.size)
             ima = TF.affine(image, angle, translations, scale, shear, resample=ra.resample, fillcolor=ra.fillcolor,)
 
             for ann in anns:
                 if ann["bbox"][0] + ann["bbox"][2] + translations[0] >= 640 or ann["bbox"][0] + translations[0] <= 0 or  ann["bbox"][1] + ann["bbox"][3] + translations[1] >= 480 or ann["bbox"][1] + translations[1] <= 0:
                     translation_out = True
+                    print('out of range')
 
         
         if iterator < 5:
@@ -164,8 +178,8 @@ class Detector(nn.Module):
             for ann in anns:
                 ann["bbox"][0] += translations[0]
                 ann["bbox"][1] += translations[1]
-        
 
+        # print(translations)
         # axs[1].imshow(image)         
         # bbs = []
         # for ann in anns:
