@@ -181,7 +181,7 @@ def train(device="cpu"):
                         )
 
                         # add bounding boxes
-                        utils.add_bounding_boxes(ax, bbs[i], dataset.coco.cats)
+                        utils.add_bounding_boxes(ax, bbs[i])
 
                         wandb.log(
                             {"test_img_{i}".format(i=i): figure}, step=current_iteration
