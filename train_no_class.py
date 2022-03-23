@@ -19,8 +19,9 @@ import utils
 from detector_no_class import Detector
 
 NUM_CATEGORIES = 15
-VALIDATION_ITERATION = 500
+VALIDATION_ITERATION = 200
 MAX_ITERATIONS = 15000
+SAVE_MODEL = 10000
 LEARNING_RATE = 1e-4
 WEIGHT_POS = 1
 WEIGHT_NEG = 1
@@ -188,6 +189,11 @@ def train(device="cpu"):
                         plt.close()
                 detector.train()
 
+            if current_iteration % SAVE_MODEL == 0:
+                model_path = "{}.pt".format(run_name)
+                utils.save_model(detector, model_path)
+                wandb.save(model_path)
+            
             current_iteration += 1
             if current_iteration > MAX_ITERATIONS:
                 break
