@@ -106,6 +106,12 @@ class Detector(nn.Module):
                     - width / 2.0
                 ).item()
                 category = o[5, bb_index[0], bb_index[1]]
+
+                category = math.floor(category*15 +0.5) - 1
+                if (category < 0.5):
+                    category = 0
+                if(category > 14):
+                    category = 14
                 
                 
                 img_bbs.append(
