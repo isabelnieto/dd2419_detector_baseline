@@ -234,8 +234,7 @@ def validate(detector, val_dataloader, current_iteration, device):
                                 img_bb["width"],
                                 img_bb["height"],
                             ],
-                            "area": img_bb["width"] * img_bb["height"],
-                            "category_id": img_bb["category"], 
+                            "area": img_bb["width"] * img_bb["height"], 
                             "score": img_bb["score"],
                             "image_id": image_id,
                         }
