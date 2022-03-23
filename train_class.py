@@ -16,7 +16,8 @@ import copy
 from pycocotools.cocoeval import COCOeval
 
 import utils
-from detector import Detector
+from detector_no_class import Detector
+from detector_class import DetectorClass
 
 NUM_CATEGORIES = 15
 VALIDATION_ITERATION = 500
@@ -59,12 +60,7 @@ def compute_loss(prediction_batch, target_batch):
         prediction_batch[neg_indices[0], 4, neg_indices[1], neg_indices[2]],
         target_batch[neg_indices[0], 4, neg_indices[1], neg_indices[2]],
     )
-    
-    class_mse = nn.functional.mse_loss(
-        prediction_batch[pos_indices[0], 5, pos_indices[1], pos_indices[2]],
-        target_batch[pos_indices[0], 5, pos_indices[1], pos_indices[2]],
-    )
-    return reg_mse, pos_mse, neg_mse, class_mse
+    return reg_mse, pos_mse, neg_mse
 
 
 def train(device="cpu"):
@@ -76,13 +72,14 @@ def train(device="cpu"):
 
     # Init model
     detector = Detector().to(device)
+    detectorClass = DetectorClass.to(device)
 
     wandb.watch(detector)
 
     dataset = CocoDetection(
         root="./dd2419_coco/training",
         annFile="./dd2419_coco/annotations/training.json",
-        transforms=detector.input_transform,
+        transforms=detector.input_transform_validation,
     )
 
     val_dataset = CocoDetection(
@@ -140,6 +137,9 @@ def train(device="cpu"):
             
             # run network
             out = detector(img_batch)
+            bbs = detector.decode_output(out, 0.5)
+
+            detectorClass.transform_input()
             
             reg_mse, pos_mse, neg_mse, class_mse = compute_loss(out, target_batch)
             loss= WEIGHT_POS * pos_mse + WEIGHT_REG * reg_mse + WEIGHT_NEG * neg_mse + WEIGHT_CLASS * class_mse

@@ -14,14 +14,14 @@ import numpy as np
 import copy
 import random
 
-class Detector(nn.Module):
+class DetectorClass(nn.Module):
     """Baseline module for object detection."""
     
     def __init__(self):
         """Create the module.
         Define all trainable layers.
         """
-        super(Detector, self).__init__()
+        super(DetectorClass, self).__init__()
 
         self.features = models.mobilenet_v2(pretrained=True).features
         # output of mobilenet_v2 will be 1280x15x20 for 480x640 input images
